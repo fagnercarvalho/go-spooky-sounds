@@ -1,6 +1,6 @@
 # go-spooky-sounds
 
-[![GoDoc](https://godoc.org/github.com/fagnercarvalho/go-spooky-sounds?status.svg)](https://godoc.org/github.com/fagnercarvalho/go-spooky-sounds) ![Go version](https://img.shields.io/github/go-mod/go-version/fagnercarvalho/go-spooky-sounds)
+![Go version](https://img.shields.io/github/go-mod/go-version/fagnercarvalho/go-spooky-sounds)
 
 Play spooky sound effects for Halloween from your speaker or Bluetooth speaker.
 
@@ -10,7 +10,7 @@ Made in Go.
 
 - This utility was tested in Go 1.13.4.
 - This only supports Linux.
-- If you want to play these spooky sounds in your Bluetooth speaker you will need to pair your system with the Bluetooth device first. I made a brief guide on [how to pair and connect to a Bluetooth device here]().
+- If you want to play these spooky sounds in your Bluetooth speaker you will need to pair your system with the Bluetooth device first. I made a brief guide on [how to pair and connect to a Bluetooth device here](https://gist.github.com/fagnercarvalho/2755eaa492a8aa27081e0e0fe7780d14).
 
 ### Installation
 
