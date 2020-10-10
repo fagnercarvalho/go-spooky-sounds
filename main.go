@@ -37,7 +37,7 @@ func main() {
 		playSpookySound(*deviceName, samples)
 
 		// wait an unexpected amount of time for the next spooky sound
-		sleepTime := time.Duration(rand.Int31n(int32(*maximumInterval))) * time.Second
+		sleepTime := time.Duration(rand.Int31n(int32(*maximumInterval))) * time.Minute
 		fmt.Printf("Play next spooky sound on %s\n", sleepTime)
 		time.Sleep(sleepTime)
 	}
