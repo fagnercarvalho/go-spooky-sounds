@@ -18,6 +18,8 @@ Made in Go.
 go get -u github.com/fagnercarvalho/go-spooky-sounds
 ```
 
+You can also run the executable from the Releases section without needing Go in your machine.
+
 ### Usage
 
 This will play a spooky sound periodically from a list of 6 predefined sounds. This can be used in your Halloween Party or just to get you in the mood of the season.
