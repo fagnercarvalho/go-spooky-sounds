@@ -15,7 +15,7 @@ Made in Go.
 ### Installation
 
 ```
-go install github.com/fagnercarvalho/go-spooky-sounds
+go get -u github.com/fagnercarvalho/go-spooky-sounds
 ```
 
 ### Usage
@@ -29,19 +29,19 @@ You can add your own files in the sounds folder. They must be in the .wav format
 Here I played the spooky sounds directly in my Raspberry Pi audio jack.
 
 ```
-go-spooky-sounds.exe -device "hw:CARD=Headphones,DEV=0"
+go-spooky-sounds -device "hw:CARD=Headphones,DEV=0"
 ```
 
 Or you can play to your Bluetooth device by using the [bluez-alsa library](https://github.com/Arkq/bluez-alsa) virtual PCM.
 
 ```
-go-spooky-sounds.exe -device "bluealsa:DEV=78:44:05:EB:93:71,PROFILE=a2dp"
+go-spooky-sounds -device "bluealsa:DEV=78:44:05:EB:93:71,PROFILE=a2dp"
 ```
 
 The default value for the maximum interval between the sounds is 15 minutes but you can change this value by using the `maximumInterval` option.
 
 ```
-go-spooky-sounds.exe -device "bluealsa:DEV=78:44:05:EB:93:71,PROFILE=a2dp" -maximumInterval 10
+go-spooky-sounds -device "bluealsa:DEV=78:44:05:EB:93:71,PROFILE=a2dp" -maximumInterval 10
 ```
 
 ### How it works?

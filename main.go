@@ -4,11 +4,14 @@ import (
 	"flag"
 	"fmt"
 	"io"
+	"io/ioutil"
 	"math/rand"
 	"os"
 	"time"
 
 	asla "github.com/cocoonlife/goalsa"
+	_ "github.com/fagnercarvalho/go-spooky-sounds/statik"
+	"github.com/rakyll/statik/fs"
 	"github.com/youpy/go-wav"
 )
 
@@ -59,8 +62,27 @@ func getSpookySounds() []string {
 }
 
 func readSpookySound(path string) []int16 {
-	file, _ := os.Open("sounds/" + path + ".wav")
-	reader := wav.NewReader(file)
+
+	// sounds are embedded into the executable so we need to use a virtual file system to get the files
+	s, err := fs.New()
+	checkErr(err)
+
+	file, _ := s.Open("//sounds//" + path + ".wav")
+	stat, err := file.Stat()
+	checkErr(err)
+	size := stat.Size()
+
+	// after getting the embedded file we need to create a temporary file into the real file system because the virtual file
+	// doesn't have the ReadAt method implemented that needs to be used by the WAV file reader library
+	buffer := make([]byte, size)
+	_, err = file.Read(buffer)
+	checkErr(err)
+
+	tmpFile := createTempFile(buffer)
+
+	defer os.Remove(tmpFile.Name())
+
+	reader := wav.NewReader(tmpFile)
 
 	defer file.Close()
 
@@ -86,6 +108,16 @@ func readSpookySound(path string) []int16 {
 	}
 
 	return data
+}
+
+func createTempFile(buffer []byte) *os.File {
+	tmpfile, err := ioutil.TempFile("", "track.wav")
+	checkErr(err)
+
+	_, err = tmpfile.Write(buffer)
+	checkErr(err)
+
+	return tmpfile
 }
 
 func playSpookySound(deviceName string, data []int16) {
