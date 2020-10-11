@@ -46,6 +46,8 @@ The default value for the maximum interval between the sounds is 15 minutes but 
 go-spooky-sounds -device "bluealsa:DEV=78:44:05:EB:93:71,PROFILE=a2dp" -maximumInterval 10
 ```
 
+You can see the playable devices in your system by using `aplay -L`.
+
 ### How it works?
 
 Periodically this will read the sound effect (a .wav file) to be played and then send the byte array of sound samples to the PCM device (pulse code modulation) by using the ALSA API (Advanced Linux Sound Architecture) made in C. The ALSA API will then call the driver that will be able to call the actual hardware device to play the sound. Specifically for Bluetooth devices the [bluez-alsa library](https://github.com/Arkq/bluez-alsa) must be used to create a virtual PCM that will expose the Bluetooth device as any other sound device available in the system.
