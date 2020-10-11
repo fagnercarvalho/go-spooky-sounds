@@ -50,3 +50,10 @@ go-spooky-sounds -device "bluealsa:DEV=78:44:05:EB:93:71,PROFILE=a2dp" -maximumI
 
 Periodically this will read the sound effect (a .wav file) to be played and then send the byte array of sound samples to the PCM device (pulse code modulation) by using the ALSA API (Advanced Linux Sound Architecture) made in C. The ALSA API will then call the driver that will be able to call the actual hardware device to play the sound. Specifically for Bluetooth devices the [bluez-alsa library](https://github.com/Arkq/bluez-alsa) must be used to create a virtual PCM that will expose the Bluetooth device as any other sound device available in the system.
 
+### My setup
+
+I'm using a Raspberry Pi 3 Model B as my main device and a JBL Go for my Bluetooth device. These JBL are quite cheap and really useful for this kind of thing.
+
+|       Raspberry PI + JBL Go       |               JBL Go                |
+| :-------------------------------: | :---------------------------------: |
+| ![My setup](go-spooky-sounds.png) | ![My setup](go-spooky-sounds-2.png) |
