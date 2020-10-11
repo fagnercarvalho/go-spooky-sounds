@@ -11,6 +11,7 @@ import (
 
 	asla "github.com/cocoonlife/goalsa"
 	_ "github.com/fagnercarvalho/go-spooky-sounds/statik"
+	"github.com/pkg/errors"
 	"github.com/rakyll/statik/fs"
 	"github.com/youpy/go-wav"
 )
@@ -33,8 +34,10 @@ func main() {
 	for {
 		// keep playing spooky sounds unless stopped
 		sound := nextSpookySound()
-		samples := readSpookySound(sound)
-		playSpookySound(*deviceName, samples)
+		samples, err := readSpookySound(sound)
+		checkErr(err)
+		err = playSpookySound(*deviceName, samples)
+		checkErr(err)
 
 		// wait an unexpected amount of time for the next spooky sound
 		sleepTime := time.Duration(rand.Int31n(int32(*maximumInterval))) * time.Minute
@@ -61,24 +64,38 @@ func getSpookySounds() []string {
 	return []string{"bell", "cat", "laugh", "hauntedhouse", "raven", "witches"}
 }
 
-func readSpookySound(path string) []int16 {
+func readSpookySound(path string) ([]int16, error) {
 
 	// sounds are embedded into the executable so we need to use a virtual file system to get the files
 	s, err := fs.New()
-	checkErr(err)
+	if err != nil {
+		return nil, errors.Wrap(err, "Error to create virtual file system")
+	}
 
-	file, _ := s.Open("//sounds//" + path + ".wav")
+	file, err := s.Open("//sounds//" + path + ".wav")
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf("Error to get `%s` sound file from file system", path))
+	}
+
 	stat, err := file.Stat()
-	checkErr(err)
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf("Error to get `%s` sound file stats", file))
+	}
+
 	size := stat.Size()
 
 	// after getting the embedded file we need to create a temporary file into the real file system because the virtual file
 	// doesn't have the ReadAt method implemented that needs to be used by the WAV file reader library
 	buffer := make([]byte, size)
 	_, err = file.Read(buffer)
-	checkErr(err)
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf("Error when reading `%s` sound file contents", stat.Name()))
+	}
 
-	tmpFile := createTempFile(buffer)
+	tmpFile, err := createTempFile(buffer)
+	if err != nil {
+		return nil, err
+	}
 
 	defer os.Remove(tmpFile.Name())
 
@@ -88,7 +105,9 @@ func readSpookySound(path string) []int16 {
 
 	// http://soundfile.sapp.org/doc/WaveFormat/
 	format, err := reader.Format()
-	checkErr(err)
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf("Error when getting `%s` .wav file format", stat.Name()))
+	}
 
 	fmt.Printf("Reading %v.%v\n", path, "wav")
 	fmt.Printf("File info: %v\n", format)
@@ -107,20 +126,24 @@ func readSpookySound(path string) []int16 {
 		}
 	}
 
-	return data
+	return data, nil
 }
 
-func createTempFile(buffer []byte) *os.File {
+func createTempFile(buffer []byte) (*os.File, error) {
 	tmpfile, err := ioutil.TempFile("", "track.wav")
-	checkErr(err)
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf("Error when creating sound temp file"))
+	}
 
 	_, err = tmpfile.Write(buffer)
-	checkErr(err)
+	if err != nil {
+		return nil, errors.Wrap(err, fmt.Sprintf("Error when writing to sound temp file"))
+	}
 
-	return tmpfile
+	return tmpfile, nil
 }
 
-func playSpookySound(deviceName string, data []int16) {
+func playSpookySound(deviceName string, data []int16) error {
 	fmt.Printf("Playing sound on %v\n", deviceName)
 
 	// only supports 44100 Hz sample rate
@@ -128,13 +151,19 @@ func playSpookySound(deviceName string, data []int16) {
 	// you can use ffmpeg or libopus in any OS to do the rate conversion
 	p, err := asla.NewPlaybackDevice(deviceName, 1, asla.FormatS16LE, 44100,
 		asla.BufferParams{})
-	checkErr(err)
+	if err != nil {
+		return errors.Wrap(err, "Error when instantiating audio playback device")
+	}
+
+	defer p.Close()
 
 	// send the data to the PCM (pulse code modulation) real or virtual device that will play the spooky sound
 	_, err = p.Write(data)
-	checkErr(err)
+	if err != nil {
+		return errors.Wrap(err, "Error when playing sound in playback device")
+	}
 
-	p.Close()
+	return nil
 }
 
 func checkErr(err error) {
