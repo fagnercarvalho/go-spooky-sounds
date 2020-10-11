@@ -20,6 +20,12 @@ go get -u github.com/fagnercarvalho/go-spooky-sounds
 
 You can also run the executable from the Releases section without needing Go in your machine.
 
+In Ubuntu you will have to install `gcc` and `libasound2-dev` by running the following command
+
+```
+sudo apt-get install build-essential && sudo apt-get install libasound2-dev
+```
+
 ### Usage
 
 This will play a spooky sound periodically from a list of 6 predefined sounds. This can be used in your Halloween Party or just to get you in the mood of the season.
@@ -32,6 +38,12 @@ Here I played the spooky sounds directly in my Raspberry Pi audio jack.
 
 ```
 go-spooky-sounds -device "hw:CARD=Headphones,DEV=0"
+```
+
+Or in Ubuntu by using PulseAudio.
+
+```
+go-spooky-sounds device "pulse"
 ```
 
 Or you can play to your Bluetooth device by using the [bluez-alsa library](https://github.com/Arkq/bluez-alsa) virtual PCM.
